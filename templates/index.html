@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche et Téléchargement</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1c1f26;
+            color: #e4e6eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #2a2f3a;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        form {
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 10px;
+            border: 1px solid #8c8b8b;
+            border-radius: 5px;
+            background-color: #333;
+            color: #e4e6eb;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #00d4ff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #009ecb;
+        }
+
+        h2 {
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #333;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+
+        iframe {
+            margin-top: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: #4139d2;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            input[type="text"], select {
+                width: 100%;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Recherche et Téléchargement</h1>
+        <form method="POST">
+            <input type="text" name="query" placeholder="Entrez votre recherche" required>
+            <select name="search_type">
+                <option value="video">Rechercher des vidéos</option>
+                <option value="document">Rechercher des documents</option>
+            </select>
+            <button type="submit">Valider</button>
+        </form>
+        {% if search_type == 'video' and videos %}
+            <h2>Résultats de la recherche de vidéos pour "{{ query }}"</h2>
+            <ul>
+                {% for video in videos %}
+                    <li>
+                        <h3>{{ video.snippet.title }}</h3>
+                        <iframe
+                            width="100%"
+                            height="215"
+                            src="https://www.youtube.com/embed/{{ video.id.videoId }}"
+                            allowfullscreen>
+                        </iframe>
+                        <a href="{{ url_for('download_video', video_id=video.id.videoId) }}">Télécharger la vidéo</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% elif search_type == 'document' and documents %}
+            <h2>Résultats de la recherche de documents pour "{{ query }}"</h2>
+            <ul>
+                {% for doc in documents %}
+                    <li>
+                        <a href="{{ doc }}" target="_blank">{{ doc }}</a>
+                        <a href="{{ url_for('download_document_route', doc_url=doc) }}" style="float: right;">Télécharger</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% elif query %}
+            <p>Aucun résultat trouvé pour "{{ query }}".</p>
+        {% endif %}
+    </div>
+</body>
+</html>
